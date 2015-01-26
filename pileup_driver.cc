@@ -13,8 +13,12 @@
  * To run this file, provide the following command line inputs:
  * ./pileup_driver <output>.txt <child>.pileup <mother>.pileup <father>.pileup
  *
+ * For example:
+ * ./pileup_driver output.txt 878_21.pileup 892_21.pileup 891_21.pileup
+ *
  * See top of pileup_utility.h for additional information.
  */
+#include "em_algorithm.cc" 
 #include "pileup_utility.h"
 
 
@@ -29,7 +33,30 @@ int main(int argc, const char *argv[]) {
   const string mother_pileup = argv[3];
   const string father_pileup = argv[4];
 
-  ProcessPileup(file_name, child_pileup, mother_pileup, father_pileup);
+  ifstream child(child_pileup);
+  ifstream mother(mother_pileup);
+  ifstream father(father_pileup);
+  if (!child.is_open() || 0 != child.fail() || !mother.is_open() ||
+      0 != mother.fail() || !father.is_open() || 0 != father.fail()) {
+    Die("Input file cannot be read.");
+  }  
+
+  TrioVector sites = PileupUtility::ParseSites(child, mother, father);
+  
+  // Feature: Write probability to output.
+  // vector<double> probabilities = PileupUtility::GetProbability(sites);
+  // PileupUtility::WriteProbability(file_name, probabilities);
+
+  // Feature: EM algorithm.
+  cout.precision(16);
+  TrioModel params;
+  ParameterEstimates *stats = EstimateParameters(params, sites);
+  stats->IsLogLikelihoodIncreasing();
+  stats->PrintMaxSequencingErrorRateEstimate();
+
+  child.close();
+  mother.close();
+  father.close();
 
   return 0;
 }

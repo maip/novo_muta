@@ -62,7 +62,7 @@ void SimulationModel::Free() {
  */
 void SimulationModel::WriteProbability(const string &file_name, int size) {
   ofstream fout(file_name);
-  TrioVector random_trios = SimulationModel::GetRandomTrios(size);
+  TrioVector random_trios = GetRandomTrios(size);
   for (int i = 0; i < size; ++i) {
     double probability = params_.MutationProbability(random_trios[i]);
     fout << probability << "\t" << has_mutation_vec_[i] << "\n";
@@ -80,7 +80,7 @@ void SimulationModel::WriteProbability(const string &file_name, int size) {
  */
 void SimulationModel::WriteMutationCounts(const string &file_name, int size) {
   ofstream fout(file_name);
-  TrioVector random_trios = SimulationModel::GetRandomTrios(size);
+  TrioVector random_trios = GetRandomTrios(size);
   for (int i = 0; i < kTrioCount; ++i) {
     vector<bool> mutations = mutation_table_[i];
     int has_mutation_total = 0;
@@ -104,7 +104,7 @@ void SimulationModel::WriteMutationCounts(const string &file_name, int size) {
  * @param  size Number of random trios.
  */
 void SimulationModel::PrintMutationCounts(int size) {
-  TrioVector random_trios = SimulationModel::GetRandomTrios(size);
+  TrioVector random_trios = GetRandomTrios(size);
   for (int i = 0; i < kTrioCount; ++i) {
     vector<bool> mutations = mutation_table_[i];
     int has_mutation_total = 0;
@@ -163,7 +163,7 @@ RowVectorXi SimulationModel::RandomDiscreteChoice(size_t K,
   // Creates size RowVector to hold random samples.
   RowVectorXi random_samples(size);
   for (int i = 0; i < size; ++i) {
-    random_samples(i) = SimulationModel::RandomDiscreteChoice(K, probabilities);
+    random_samples(i) = RandomDiscreteChoice(K, probabilities);
   }
   return random_samples;
 }
@@ -193,10 +193,7 @@ int SimulationModel::Mutate(int genotype_idx, bool is_germline,
   }
 
   // Randomly mutates the genotype using the probabilities as weights.
-  int mutated_genotype_idx = SimulationModel::RandomDiscreteChoice(
-    kGenotypeCount,
-    mat
-  );
+  int mutated_genotype_idx = RandomDiscreteChoice(kGenotypeCount, mat);
   if (mutated_genotype_idx != genotype_idx) {
     has_mutation_ = true;
   }
@@ -230,8 +227,8 @@ int SimulationModel::GetChildAllele(int parent_genotype) {
  * @return                 Numeric child genotype.
  */
 int SimulationModel::GetChildGenotype(int mother_genotype, int father_genotype) {
-  int child_allele1 = SimulationModel::GetChildAllele(mother_genotype);
-  int child_allele2 = SimulationModel::GetChildAllele(father_genotype);
+  int child_allele1 = GetChildAllele(mother_genotype);
+  int child_allele2 = GetChildAllele(father_genotype);
   for (int i = 0; i < kGenotypeCount; ++i) {
     if (child_allele1 == i / kNucleotideCount &&
         child_allele2 == i % kNucleotideCount) {
@@ -250,7 +247,7 @@ int SimulationModel::GetChildGenotype(int mother_genotype, int father_genotype) 
  */
 MatrixXi SimulationModel::GetGenotypesMatrix(int size) {
   // Generates random samples using population priors as weights.
-  RowVectorXi parent_genotypes = SimulationModel::RandomDiscreteChoice(
+  RowVectorXi parent_genotypes = RandomDiscreteChoice(
     kGenotypePairCount,
     params_.population_priors(),
     size
@@ -263,12 +260,8 @@ MatrixXi SimulationModel::GetGenotypesMatrix(int size) {
     int father_genotype = parent_genotypes(i) % kGenotypeCount;
     genotypes_mat(1, i) = mother_genotype;
     genotypes_mat(2, i) = father_genotype;
-    genotypes_mat(0, i) = SimulationModel::GetChildGenotype(
-      mother_genotype,
-      father_genotype
-    );
+    genotypes_mat(0, i) = GetChildGenotype(mother_genotype, father_genotype);
   }
-
   return genotypes_mat;
 }
 
@@ -311,7 +304,7 @@ ReadData SimulationModel::DirichletMultinomialSample(int genotype_idx) {
  */
 TrioVector SimulationModel::GetRandomTrios(int size) {
   TrioVector random_trios;
-  MatrixXi genotypes_mat = SimulationModel::GetGenotypesMatrix(size);
+  MatrixXi genotypes_mat = GetGenotypesMatrix(size);
   TrioVector trio_vec = GetTrioVector(kNucleotideCount);
 
   for (int i = 0; i < size; ++i) {
@@ -320,21 +313,21 @@ TrioVector SimulationModel::GetRandomTrios(int size) {
     int father_genotype = genotypes_mat(2, i);
 
     // Processes germline mutation. Germline matrix requires no Kronecker.
-    int child_germline_genotype = SimulationModel::Mutate(
+    int child_germline_genotype = Mutate(
       child_genotype,
       true,
       mother_genotype*kGenotypeCount + father_genotype
     );
 
     // Processes somatic mutation.
-    int child_somatic_genotype = SimulationModel::Mutate(child_germline_genotype);
-    int mother_somatic_genotype = SimulationModel::Mutate(mother_genotype);
-    int father_somatic_genotype = SimulationModel::Mutate(father_genotype);
+    int child_somatic_genotype = Mutate(child_germline_genotype);
+    int mother_somatic_genotype = Mutate(mother_genotype);
+    int father_somatic_genotype = Mutate(father_genotype);
 
     // Creates reads from somatic genotypes using the Dirichlet multinomial.
-    ReadData child_read = SimulationModel::DirichletMultinomialSample(child_somatic_genotype);
-    ReadData mother_read = SimulationModel::DirichletMultinomialSample(mother_somatic_genotype);
-    ReadData father_read = SimulationModel::DirichletMultinomialSample(father_somatic_genotype);
+    ReadData child_read = DirichletMultinomialSample(child_somatic_genotype);
+    ReadData mother_read = DirichletMultinomialSample(mother_somatic_genotype);
+    ReadData father_read = DirichletMultinomialSample(father_somatic_genotype);
     ReadDataVector data_vec = {child_read, mother_read, father_read};
     random_trios.push_back(data_vec);
 

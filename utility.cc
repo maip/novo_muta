@@ -2,7 +2,7 @@
  * @file utility.cc
  * @author Melissa Ip
  *
- * This file contains the implementation of utility.
+ * This file contains the implementation of utility.h.
  *
  * See top of utility.h for a complete description.
  */
@@ -38,6 +38,34 @@
 //          3, 0, 3, 1, 3, 2, 3, 3;  // T
 //   return mat;
 // }
+
+/**
+ * Returns numeric nucleotide index given a char. For use in VariantVisitor.
+ *
+ * @param  b Char.
+ * @return   Numeric nucleotide index.
+ */
+uint16_t ToNucleotideIndex(char base) {
+  switch (base) {        
+  case 'A':
+  case 'a':    
+    return 0;
+  case 'C':
+  case 'c':
+    return 1;
+  case 'G':
+  case 'g':
+    return 2;
+  case 'T':
+  case 't':
+    return 3;
+  case '-':
+  case 'N':
+    return -1 ;
+  default:  // Unknown base.
+    return -1;
+  }
+}
 
 /**
  * Returns a 16 x 16 x 4 Eigen matrix filled with zeros. The third dimension is
@@ -158,7 +186,7 @@ void PrintReadDataVector(const ReadDataVector &data_vec) {
  *
  * The current implementation creates duplicate nucleotide counts.
  *
- * @param  coverage  Coverage or max nucleotide count. Must at least be 1.
+ * @param  coverage  Coverage or max nucleotide count. Must be at least 1.
  * @return           4^coverage x 4 Eigen matrix of nucleotide counts.
  */
 MatrixXi EnumerateNucleotideCounts(int coverage) {
@@ -203,7 +231,6 @@ ReadDataVector FourNucleotideCounts() {
   ReadDataVector vec;
   vec.reserve(a4_0_counts.size() + a3_1_counts.size() +
               a2_2_counts.size() + a2_1_1_counts.size() + 1);
-
   vec.insert(vec.end(), a4_0_counts.begin(), a4_0_counts.end());
   vec.insert(vec.end(), a3_1_counts.begin(), a3_1_counts.end());
   vec.insert(vec.end(), a2_2_counts.begin(), a2_2_counts.end());
@@ -211,7 +238,6 @@ ReadDataVector FourNucleotideCounts() {
 
   ReadData a1_1_1_1 = {1, 1, 1, 1};  // Does not need to be sorted.
   vec.push_back(a1_1_1_1);
-
   return vec;
 }
 
@@ -226,7 +252,7 @@ ReadDataVector GetPermutation(int arr[]) {
   ReadData data;
   ReadDataVector vec;
   sort(arr, arr + kNucleotideCount);
-  
+
   do {
     data.reads[0] = arr[0];
     data.reads[1] = arr[1];
@@ -269,26 +295,6 @@ ReadDataVector GetUniqueReadDataVector(const MatrixXi &mat) {
 }
 
 /**
- * Returns all possible and unique trio sets of sequencing counts for an
- * individual sequenced at given coverage.
- *
- * @param  coverage Coverage or max nucleotide count.
- * @return          Vector of ReadDataVector.
- */
-TrioVector GetTrioVector(int coverage) {
-  TrioVector trio_vec;
-  ReadDataVector data_vec = FourNucleotideCounts();
-  for (ReadData data1 : data_vec) {
-    for (ReadData data2 : data_vec) {
-      for (ReadData data3 : data_vec) {
-        trio_vec.push_back({ data1, data2, data3 });
-      }
-    }
-  }
-  return trio_vec;
-}
-
-/**
  * Returns the index of a ReadDataVector in the TrioVector of all trios at 4x
  * coverage. Assumes the ReadDataVector has 4x coverage.
  *
@@ -303,6 +309,51 @@ int IndexOfReadDataVector(const ReadDataVector &data_vec, TrioVector trio_vec) {
     }
   }
   return -1;
+}
+
+/**
+ * Returns all possible and unique trio sets of sequencing counts for an
+ * individual sequenced at given coverage. Assume  coverage is at least 1,
+ * usually 4.
+ *
+ * @param  coverage Coverage or max nucleotide count.
+ * @return          Vector of ReadDataVector.
+ */
+TrioVector GetTrioVector(int coverage) {
+  TrioVector trio_vec;
+  ReadDataVector data_vec;
+
+  if (coverage == kNucleotideCount) {
+    data_vec = FourNucleotideCounts();
+  } else {  // Less efficient.
+    MatrixXi mat = EnumerateNucleotideCounts(coverage);
+    data_vec = GetUniqueReadDataVector(mat);
+  }
+  
+  for (ReadData data1 : data_vec) {
+    for (ReadData data2 : data_vec) {
+      for (ReadData data3 : data_vec) {
+        trio_vec.push_back({ data1, data2, data3 });
+      }
+    }
+  }
+  return trio_vec;
+}
+
+/**
+ * Returns true if ReadDataVector contains a zero vector.
+ *
+ * @param  data_vec ReadDataVector
+ * @return          True if ReadDataVector contains a zero vector.
+ */
+bool HasZeroReadDataVector(const ReadDataVector &data_vec) {
+  ReadData zero_data = {0, 0, 0, 0};
+  for (auto data : data_vec) {
+    if (EqualsReadData(data, zero_data)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 /**

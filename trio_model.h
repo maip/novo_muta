@@ -12,12 +12,13 @@
  * Cartwright et al.: Family-Based Method for Capturing De Novo Mutations
  * http://www.ncbi.nlm.nih.gov/pmc/articles/PMC3728889/
  *
- * This is the implementation for an improved trio model with
- * Dirichlet-multinomial approximations.
+ * This TrioModel class uses Dirichlet-multinomial approximations while the
+ * derived class MultinomialTrioModel uses simpler multinomial approximations
+ * and is based on the infinite sites model.
  *
  * Example usage:
  *
- *   TrioModel params;  // Uses default parameters.
+ *   TrioModel params;  // Uses default parameters with Dirichlet-multinomial.
  *   ReadDataVector data = {  // Sequencing data in order: child, mother, father.
  *     {30, 0, 0, 0},
  *     {30, 0, 0, 0},
@@ -75,13 +76,13 @@ class TrioModel {
   Matrix16_4d alphas() const;
   ReadDependentData read_dependent_data() const;
 
- private:
+ protected:
   void GermlineTransition(bool is_numerator=false);  // Helper functions for MutationProbability.
   void SomaticTransition(bool is_numerator=false);
   RowVector256d GetRootMat(const RowVector256d &child_germline_probability,
                            const RowVector256d &parent_probability);
   RowVector256d PopulationPriors();  // Functions for setting up the model and relevant arrays.
-  Matrix16_16d PopulationPriorsExpanded();
+  virtual Matrix16_16d PopulationPriorsExpanded();
   RowVector16d PopulationPriorsSingle();
   void SetGermlineMutationProbabilities();
   double GermlineMutation(int child_nucleotide_idx, int parent_genotype_idx,
@@ -91,8 +92,8 @@ class TrioModel {
   double SomaticMutation(int nucleotide_idx, int other_nucleotide_idx);
   Matrix16_16d SomaticProbabilityMat();
   Matrix16_16d SomaticProbabilityMatDiag();
-  void SequencingProbabilityMat();
-  Matrix16_4d Alphas();
+  virtual void SequencingProbabilityMat();
+  Matrix16_4d GetAlphas();
 
   // Instance member variables.
   double population_mutation_rate_;
@@ -102,7 +103,7 @@ class TrioModel {
   double germline_mutation_rate_;
   double somatic_mutation_rate_;
   double sequencing_error_rate_;
-  double dirichlet_dispersion_;
+  double dirichlet_dispersion_;  // Set to 1.0 for MultinomialTrioModel.
   RowVector4d nucleotide_frequencies_;
   Matrix16_4d alphas_;
   RowVector16d population_priors_single_;  // Unused.
