@@ -1,19 +1,19 @@
 /**
- * @file test_trio_model.cc
+ * @file test_multinomial_trio_model.cc
  * @author Melissa Ip
  *
- * This file tests the functions in trio_model.h.
+ * This file tests the functions in multinomial_trio_model.h.
  */
-#define BOOST_TEST_MODULE TestTrioModel
+#define BOOST_TEST_MODULE TestMultinomialTrioModel
 
 #include <boost/test/unit_test.hpp>
 #include <boost/test/floating_point_comparison.hpp>
 
-#include "trio_model.h"
+#include "multinomial_trio_model.h"
 
 
-BOOST_AUTO_TEST_CASE(TestTrioModel) {
-  TrioModel default_params;
+BOOST_AUTO_TEST_CASE(TestMultinomialTrioModel) {
+  MultinomialTrioModel default_params;
   RowVector4d frequencies;
   frequencies << 0.25, 0.25, 0.25, 0.25;
   double germline_mutation_rate = default_params.germline_mutation_rate();
@@ -26,7 +26,7 @@ BOOST_AUTO_TEST_CASE(TestTrioModel) {
   BOOST_CHECK(germline_mutation_rate == 2e-8);
   BOOST_CHECK(default_params.somatic_mutation_rate() == 2e-8);
   BOOST_CHECK(default_params.sequencing_error_rate() == 0.005);
-  BOOST_CHECK(default_params.dirichlet_dispersion() == 1000.0);
+  BOOST_CHECK(default_params.dirichlet_dispersion() == 1.0);
   BOOST_CHECK(default_params.nucleotide_frequencies() == frequencies);
   BOOST_CHECK(default_params.homozygous_match() == homozygous_match);
   BOOST_CHECK(default_params.heterozygous_match() == heterozygous_match);
@@ -42,15 +42,13 @@ BOOST_AUTO_TEST_CASE(TestTrioModel) {
   double theta = 0.05;
   double mutation_rate = 1e-6;
   double sequencing_error_rate = 0.25;
-  double dirichlet_dispersion = 1000.0;
   RowVector4d frequencies_overloaded;
-  frequencies_overloaded << 0.2, 0.3, 0.25, 0.25;
-  TrioModel overloaded_params(theta,
-                              mutation_rate,
-                              mutation_rate,
-                              sequencing_error_rate,
-                              dirichlet_dispersion,
-                              frequencies_overloaded);
+  frequencies_overloaded << 0.75, 0.0, 0.25, 0.0;
+  MultinomialTrioModel overloaded_params(theta,
+                                         mutation_rate,
+                                         mutation_rate,
+                                         sequencing_error_rate,
+                                         frequencies_overloaded);
 
   double germline_mutation_rate_overloaded = overloaded_params.germline_mutation_rate();
   double exp_term_overloaded = exp(-4.0/3.0 * germline_mutation_rate_overloaded);
@@ -62,7 +60,7 @@ BOOST_AUTO_TEST_CASE(TestTrioModel) {
   BOOST_CHECK(germline_mutation_rate_overloaded == mutation_rate);
   BOOST_CHECK(overloaded_params.somatic_mutation_rate() == mutation_rate);
   BOOST_CHECK(overloaded_params.sequencing_error_rate() == sequencing_error_rate);
-  BOOST_CHECK(overloaded_params.dirichlet_dispersion() == dirichlet_dispersion);
+  BOOST_CHECK(overloaded_params.dirichlet_dispersion() == 1.0);
   BOOST_CHECK(overloaded_params.nucleotide_frequencies() == frequencies_overloaded);
   BOOST_CHECK(overloaded_params.homozygous_match() == homozygous_match_overloaded);
   BOOST_CHECK(overloaded_params.heterozygous_match() == heterozygous_match_overloaded);
@@ -77,7 +75,7 @@ BOOST_AUTO_TEST_CASE(TestTrioModel) {
 }
 
 BOOST_AUTO_TEST_CASE(TestMutationProbability) {
-  TrioModel params;
+  MultinomialTrioModel params;
   TrioVector trio_vec = GetTrioVector(kNucleotideCount);
   for (ReadDataVector data_vec : trio_vec) {
     double probability = params.MutationProbability(data_vec);
@@ -87,7 +85,7 @@ BOOST_AUTO_TEST_CASE(TestMutationProbability) {
 
 // Also tests read_dependent_data.cc
 BOOST_AUTO_TEST_CASE(TestSetReadDependentData) {
-  TrioModel params;
+  MultinomialTrioModel params;
   ReadDataVector data_vec = {{40, 0, 0, 0},
                              {40, 0, 0, 0},
                              {40, 0, 0, 0}};
@@ -122,7 +120,7 @@ BOOST_AUTO_TEST_CASE(TestSetReadDependentData) {
 }
 
 BOOST_AUTO_TEST_CASE(TestGetAlphas) {
-  TrioModel params;
+  MultinomialTrioModel params;
   Matrix16_4d test_alphas;
   Matrix16_4d alphas = params.alphas();
   double rate = params.sequencing_error_rate();
@@ -151,22 +149,21 @@ BOOST_AUTO_TEST_CASE(TestGetAlphas) {
                  mismatch,     mismatch,     heterozygous, heterozygous,
                  mismatch,     mismatch,     mismatch,     homozygous;
 
-  test_alphas *= 1000.0;
   BOOST_CHECK(alphas == test_alphas);
 }
 
 BOOST_AUTO_TEST_CASE(TestEquals) {
-  TrioModel a;
-  TrioModel b(0.001, 2e-8, 2e-8, 0.005, 1000.0, {0.25, 0.25, 0.25, 0.25});
-  TrioModel c;
+  MultinomialTrioModel a;
+  MultinomialTrioModel b(0.001, 2e-8, 2e-8, 0.005, {0.25, 0.25, 0.25, 0.25});
+  MultinomialTrioModel c;
   c.set_population_mutation_rate(1e-6);
   BOOST_CHECK(a.Equals(b));
   BOOST_CHECK(!a.Equals(c));
 }
 
 BOOST_AUTO_TEST_CASE(test_set_population_mutation_rate) {
-  TrioModel a;
-  TrioModel b;
+  MultinomialTrioModel a;
+  MultinomialTrioModel b;
   b.set_population_mutation_rate(1e-6);
   BOOST_CHECK(b.population_mutation_rate() == 1e-6);
   BOOST_CHECK(b.population_priors() != a.population_priors());
@@ -174,8 +171,8 @@ BOOST_AUTO_TEST_CASE(test_set_population_mutation_rate) {
 }
 
 BOOST_AUTO_TEST_CASE(test_set_germline_mutation_rate) {
-  TrioModel a;
-  TrioModel b;
+  MultinomialTrioModel a;
+  MultinomialTrioModel b;
   b.set_germline_mutation_rate(1e-6);
   BOOST_CHECK(b.germline_mutation_rate() == 1e-6);
   BOOST_CHECK(b.homozygous_match() != a.homozygous_match());
@@ -187,8 +184,8 @@ BOOST_AUTO_TEST_CASE(test_set_germline_mutation_rate) {
 }
 
 BOOST_AUTO_TEST_CASE(test_set_somatic_mutation_rate) {
-  TrioModel a;
-  TrioModel b;
+  MultinomialTrioModel a;
+  MultinomialTrioModel b;
   b.set_somatic_mutation_rate(1e-6);
   BOOST_CHECK(b.somatic_mutation_rate() == 1e-6);
   BOOST_CHECK(b.somatic_probability_mat() != a.somatic_probability_mat());
@@ -196,16 +193,16 @@ BOOST_AUTO_TEST_CASE(test_set_somatic_mutation_rate) {
 }
 
 BOOST_AUTO_TEST_CASE(test_set_sequencing_error_rate) {
-  TrioModel a;
-  TrioModel b;
+  MultinomialTrioModel a;
+  MultinomialTrioModel b;
   b.set_sequencing_error_rate(0.001);
   BOOST_CHECK(b.sequencing_error_rate() == 0.001);
   BOOST_CHECK(b.alphas() != a.alphas());
 }
 
 BOOST_AUTO_TEST_CASE(test_set_dirichlet_dispersion) {
-  TrioModel a;
-  TrioModel b;
+  MultinomialTrioModel a;
+  MultinomialTrioModel b;
   b.set_dirichlet_dispersion(100000.0);
   BOOST_CHECK(b.dirichlet_dispersion() == 100000.0);
   // Uncomment this to check dirichlet multionomial on master branch.
@@ -213,8 +210,8 @@ BOOST_AUTO_TEST_CASE(test_set_dirichlet_dispersion) {
 }
 
 BOOST_AUTO_TEST_CASE(test_set_nucleotide_frequencies) {
-  TrioModel a;
-  TrioModel b;
+  MultinomialTrioModel a;
+  MultinomialTrioModel b;
   RowVector4d frequencies;
   frequencies << 0.75, 0.0, 0.25, 0.0;
   b.set_nucleotide_frequencies(frequencies);

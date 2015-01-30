@@ -61,6 +61,10 @@ if(Boost_FOUND)
   add_executable(test_trio_model ${TRIO_MODEL} test/test_trio_model.cc)
   target_link_libraries(test_trio_model ${GSL_LIBRARIES} ${Boost_LIBRARIES})
 
+  project(test_multinomial_trio_model)
+  add_executable(test_multinomial_trio_model ${TRIO_MODEL} test/test_multinomial_trio_model.cc)
+  target_link_libraries(test_multinomial_trio_model ${GSL_LIBRARIES} ${Boost_LIBRARIES})
+
   project(test_simulation_model)
   add_executable(test_simulation_model ${TRIO_MODEL} simulation_model.cc test/test_simulation_model.cc)
   target_link_libraries(test_simulation_model ${GSL_LIBRARIES} ${Boost_LIBRARIES})
@@ -86,6 +90,7 @@ enable_testing()
 
 add_test(test_utility test_utility)
 add_test(test_trio_model test_trio_model)
+add_test(test_multinomial_trio_model test_multinomial_trio_model)
 add_test(test_simulation_model test_simulation_model)
 add_test(test_pileup_utility test_pileup_utility)
 add_test(test_sufficient_statistics test_sufficient_statistics)

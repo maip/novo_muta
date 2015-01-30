@@ -26,34 +26,36 @@ int main() {
   cin.get(is_default);
   cin.ignore(20, '\n');  // Flush buffer.
   
-  TrioModel params;
-  if (is_default == 'n') {  // All other values uses default parameters.
-    string rate_str;
-    double rate = 0.0;
-    cout << endl << "Enter population mutation rate (theta):" << endl;
-    getline(cin, rate_str);
-    stringstream rate_ss1(rate_str);
-    rate_ss1 >> rate;
-    params.set_population_mutation_rate(rate);
+  MultinomialTrioModel params;
+  
+  // TrioModel params;
+  // if (is_default == 'n') {  // All other values uses default parameters.
+  //   string rate_str;
+  //   double rate = 0.0;
+  //   cout << endl << "Enter population mutation rate (theta):" << endl;
+  //   getline(cin, rate_str);
+  //   stringstream rate_ss1(rate_str);
+  //   rate_ss1 >> rate;
+  //   params.set_population_mutation_rate(rate);
 
-    cout << endl << "Enter germline mutation rate:" << endl;
-    getline(cin, rate_str);
-    stringstream rate_ss2(rate_str);
-    rate_ss2 >> rate;
-    params.set_germline_mutation_rate(rate);
+  //   cout << endl << "Enter germline mutation rate:" << endl;
+  //   getline(cin, rate_str);
+  //   stringstream rate_ss2(rate_str);
+  //   rate_ss2 >> rate;
+  //   params.set_germline_mutation_rate(rate);
 
-    cout << endl << "Enter somatic mutation rate:" << endl;
-    getline(cin, rate_str);
-    stringstream rate_ss3(rate_str);
-    rate_ss3 >> rate;
-    params.set_somatic_mutation_rate(rate);
+  //   cout << endl << "Enter somatic mutation rate:" << endl;
+  //   getline(cin, rate_str);
+  //   stringstream rate_ss3(rate_str);
+  //   rate_ss3 >> rate;
+  //   params.set_somatic_mutation_rate(rate);
 
-    cout << endl << "Enter sequencing error rate:" << endl;
-    getline(cin, rate_str);
-    stringstream rate_ss4(rate_str);
-    rate_ss4 >> rate;
-    params.set_sequencing_error_rate(rate);
-  }
+  //   cout << endl << "Enter sequencing error rate:" << endl;
+  //   getline(cin, rate_str);
+  //   stringstream rate_ss4(rate_str);
+  //   rate_ss4 >> rate;
+  //   params.set_sequencing_error_rate(rate);
+  // }
 
   while (true) {
     cout << endl << "Enter the child sequencing read <A C G T>. Example: 0 1 2 3" << endl;

@@ -20,6 +20,8 @@
 MultinomialTrioModel::MultinomialTrioModel()
     : TrioModel() {
   set_dirichlet_dispersion(1.0);
+  population_priors_ = TrioModel::PopulationPriors();
+  population_priors_single_ = TrioModel::PopulationPriorsSingle();
 }
 
 /**
@@ -44,6 +46,8 @@ MultinomialTrioModel::MultinomialTrioModel(double population_mutation_rate,
                 sequencing_error_rate,
                 1.0,
                 nucleotide_frequencies) {
+  population_priors_ = TrioModel::PopulationPriors();
+  population_priors_single_ = TrioModel::PopulationPriorsSingle();
 }
 
 /**

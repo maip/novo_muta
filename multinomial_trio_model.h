@@ -19,7 +19,8 @@ class MultinomialTrioModel : public TrioModel {
                        double somatic_mutation_rate,
                        double sequencing_error_rate,
                        const RowVector4d &nucleotide_frequencies);
-
+ 
+ protected:
   double SpectrumProbability(const RowVector4d &nucleotide_counts);  // Calculates probability of allele spectrum given read counts.
   Matrix16_16d PopulationPriorsExpanded();
   void SequencingProbabilityMat();
