@@ -61,10 +61,10 @@ double ParameterEstimates::MaxSequencingErrorRate() {
  * Calls the appropriate E-Step function for each summary statistic. Returns
  * true if successful, otherwise false.
  *
- * @param params  TrioModel object containing parameters.
+ * @param params  MultinomialTrioModel object containing parameters.
  * @param sites   List of parsed trios.
  */
-bool ParameterEstimates::Update(TrioModel &params, const TrioVector &sites) {
+bool ParameterEstimates::Update(MultinomialTrioModel &params, const TrioVector &sites) {
   for (const ReadDataVector data_vec : sites) {
     params.SetReadDependentData(data_vec);
     som_ += SufficientStatistics::GetSomaticStatistic(params);

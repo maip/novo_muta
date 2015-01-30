@@ -43,7 +43,7 @@ BOOST_AUTO_TEST_CASE(TestMaxSequencingErrorRate) {
 }
 
 BOOST_AUTO_TEST_CASE(TestUpdate) {
-  TrioModel params;
+  MultinomialTrioModel params;
   ParameterEstimates stats(1.0);
   TrioVector vec;
   ReadDataVector data = {{40, 0, 0, 0},

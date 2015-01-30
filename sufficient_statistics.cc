@@ -15,10 +15,10 @@
  * paper as a summary statistic. Calculated during the E-step of
  * expectation-maximization algorithm.
  *
- * @param params TrioModel object containing parameters.
+ * @param params MultinomialTrioModel object containing parameters.
  * @return       Expected theta.
  */
-double SufficientStatistics::GetPopulationMutationRateStatistic(const TrioModel &params) {
+double SufficientStatistics::GetPopulationMutationRateStatistic(const MultinomialTrioModel &params) {
   const ReadDependentData data = params.read_dependent_data();
   const RowVector256d root_mat = data.denominator.root_mat;
   const double sum = data.denominator.sum;
@@ -34,10 +34,10 @@ double SufficientStatistics::GetPopulationMutationRateStatistic(const TrioModel 
  * genotype and its sequencing reads. Calculated during the E-step of
  * expectation-maximization algorithm.
  *
- * @param params TrioModel object containing parameters.
+ * @param params MultinomialTrioModel object containing parameters.
  * @return       Number of expected heterozygous matches.
  */
-double SufficientStatistics::GetHeterozygousStatistic(const TrioModel &params) {
+double SufficientStatistics::GetHeterozygousStatistic(const MultinomialTrioModel &params) {
   const ReadDependentData data = params.read_dependent_data();
   const ReadDataVector data_vec = data.read_data_vec;
   Matrix3_16d het_matches = GetHeterozygousMatches(data_vec);
@@ -49,10 +49,10 @@ double SufficientStatistics::GetHeterozygousStatistic(const TrioModel &params) {
  * genotype and its sequencing reads. Calculated during the E-step of
  * expectation-maximization algorithm.
  *
- * @param params TrioModel object containing parameters.
+ * @param params MultinomialTrioModel object containing parameters.
  * @return       Number of expected homozygous matches.
  */
-double SufficientStatistics::GetHomozygousStatistic(const TrioModel &params) {
+double SufficientStatistics::GetHomozygousStatistic(const MultinomialTrioModel &params) {
   const ReadDependentData data = params.read_dependent_data();
   const ReadDataVector data_vec = data.read_data_vec;
   Matrix3_16d hom_matches = GetHomozygousMatches(data_vec);
@@ -64,10 +64,10 @@ double SufficientStatistics::GetHomozygousStatistic(const TrioModel &params) {
  * and its sequencing reads. Calculated during the E-step of
  * expectation-maximization algorithm.
  *
- * @param  params TrioModel object containing parameters.
+ * @param  params MultinomialTrioModel object containing parameters.
  * @return        Number of expected mismatches.
  */
-double SufficientStatistics::GetMismatchStatistic(const TrioModel &params) {
+double SufficientStatistics::GetMismatchStatistic(const MultinomialTrioModel &params) {
   const ReadDependentData data = params.read_dependent_data();
   const ReadDataVector data_vec = data.read_data_vec;
   Matrix3_16d mismatches = GetMismatches(data_vec);
@@ -77,11 +77,11 @@ double SufficientStatistics::GetMismatchStatistic(const TrioModel &params) {
 /**
  * Returns S_E, S_Hom, or S_Het based on parameters passed in.
  *
- * @param  params  TrioModel object containing parameters.
+ * @param  params  MultinomialTrioModel object containing parameters.
  * @para   matches Mismatches, homozygous, or heterzygous matches.
  * @return         Number of expected sequencing error statistic.
  */
-double SufficientStatistics::GetSequencingErrorStatistic(const TrioModel &params,
+double SufficientStatistics::GetSequencingErrorStatistic(const MultinomialTrioModel &params,
                                                          const Matrix3_16d &matches) {
   const ReadDependentData data = params.read_dependent_data();
   const Matrix16_16d somatic_probability_mat = params.somatic_probability_mat();
@@ -308,10 +308,10 @@ Matrix3_16d SufficientStatistics::GetHomozygousMatches(const ReadDataVector &dat
  * number of nucleotide mismatches between f* and ob. Calculated during the
  * E-step of expectation-maximization algorithm.
  *
- * @param  params TrioModel object containing parameters.
+ * @param  params MultinomialTrioModel object containing parameters.
  * @return        Number of expected germline mutations.
  */
-double SufficientStatistics::GetGermlineStatistic(const TrioModel &params) {
+double SufficientStatistics::GetGermlineStatistic(const MultinomialTrioModel &params) {
   const ReadDependentData data = params.read_dependent_data();
   const Matrix16_256d germline_mutation_counts = GermlineMutationCounts(params);
   const Matrix16_256d germline_probability_mat = params.germline_probability_mat();
@@ -348,10 +348,10 @@ double SufficientStatistics::GetGermlineStatistic(const TrioModel &params) {
  * nucleotide of the child genotype comes from the mother, the second from the
  * father.
  *
- * @param  params TrioModel object containing parameters.
+ * @param  params MultinomialTrioModel object containing parameters.
  * @return        16 x 256 Eigen matrix holding the number of germline mutations.
  */
-Matrix16_256d SufficientStatistics::GermlineMutationCounts(const TrioModel &params) {
+Matrix16_256d SufficientStatistics::GermlineMutationCounts(const MultinomialTrioModel &params) {
   Matrix16_256d mat = Matrix16_256d::Zero();
   Matrix4_16d germline_mutation_counts = GermlineMutationCountsSingle(params);
   int child_allele1 = 0;
@@ -391,10 +391,10 @@ Matrix16_256d SufficientStatistics::GermlineMutationCounts(const TrioModel &para
  *
  * Het = 0.5 * no match / heterozygous match.
  *
- * @param  params TrioModel object containing parameters.
+ * @param  params MultinomialTrioModel object containing parameters.
  * @return        4 x 16 Eigen matrix holding the number of germline mutations.
  */
-Matrix4_16d SufficientStatistics::GermlineMutationCountsSingle(const TrioModel &params) {
+Matrix4_16d SufficientStatistics::GermlineMutationCountsSingle(const MultinomialTrioModel &params) {
   Matrix4_16d mat = Matrix4_16d::Zero();
 
   for (int i = 0; i < kNucleotideCount; ++i) {  // Child allele.
@@ -424,10 +424,10 @@ Matrix4_16d SufficientStatistics::GermlineMutationCountsSingle(const TrioModel &
  * or the expected number of somatic mutations. Calculated during the E-step of
  * expectation-maximization algorithm.
  *
- * @param  params TrioModel object containing parameters.
+ * @param  params MultinomialTrioModel object containing parameters.
  * @return        Number of expected somatic mutations.
  */
-double SufficientStatistics::GetSomaticStatistic(const TrioModel &params) {
+double SufficientStatistics::GetSomaticStatistic(const MultinomialTrioModel &params) {
   const ReadDependentData data = params.read_dependent_data();
   const Matrix16_16d somatic_probability_mat = params.somatic_probability_mat();
   const Matrix16_256d germline_probability_mat = params.germline_probability_mat();

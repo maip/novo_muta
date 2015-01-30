@@ -13,11 +13,11 @@
  * and expected sufficient statistics for the sum of all sites by performing
  * the EM algorithm. Returns null if sites is empty.
  *
- * @param  params TrioModel object containing parameters.
+ * @param  params MultinomialTrioModel object containing parameters.
  * @param  sites  List of trios.
  * @return        Parameter estimates.
  */
-ParameterEstimates* EstimateParameters(TrioModel &params, const TrioVector &sites) {
+ParameterEstimates* EstimateParameters(MultinomialTrioModel &params, const TrioVector &sites) {
   int sites_count = sites.size();
   if (sites_count > 0) {
     ParameterEstimates *stats = new ParameterEstimates(sites_count);

@@ -49,7 +49,7 @@ int main(int argc, const char *argv[]) {
 
   // Feature: EM algorithm.
   cout.precision(16);
-  TrioModel params;
+  MultinomialTrioModel params;
   ParameterEstimates *stats = EstimateParameters(params, sites);
   stats->IsLogLikelihoodIncreasing();
   stats->PrintMaxSequencingErrorRateEstimate();

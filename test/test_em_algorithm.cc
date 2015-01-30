@@ -14,7 +14,7 @@
 BOOST_AUTO_TEST_CASE(TestEstimateParameters) {
   const TrioVector trios = GetTrioVector(kNucleotideCount);
   for (auto trio : trios) {
-    TrioModel params;
+    MultinomialTrioModel params;
     TrioVector sites;
     for (int i = 0; i < 10; ++i) {
       sites.push_back(trio);
@@ -29,7 +29,7 @@ BOOST_AUTO_TEST_CASE(TestEstimateParameters) {
   }
 
   for (auto trio : trios) {
-    TrioModel params;
+    MultinomialTrioModel params;
     TrioVector sites;
     sites.push_back(trio);
 

@@ -21,7 +21,7 @@ class ParameterEstimates {
  public:
   ParameterEstimates(double sites_count);  // Default constructor.
   ~ParameterEstimates() {}
-  bool Update(TrioModel &params, const TrioVector &sites);
+  bool Update(MultinomialTrioModel &params, const TrioVector &sites);
   void Clear();
   void Print();
 

@@ -12,7 +12,7 @@
 
 
 BOOST_AUTO_TEST_CASE(TestGetPopulationMutationRateStatistic) {
-  TrioModel params;
+  MultinomialTrioModel params;
   ReadDataVector data = {{20, 0, 20, 0},
                          {40, 0, 0,  0},
                          {40, 0, 0,  0}};
@@ -22,7 +22,7 @@ BOOST_AUTO_TEST_CASE(TestGetPopulationMutationRateStatistic) {
 }
 
 BOOST_AUTO_TEST_CASE(TestGetHeterozygousStatistic) {
-  TrioModel params;
+  MultinomialTrioModel params;
   ReadDataVector data = {{20, 0, 20, 0},
                          {40, 0, 0,  0},
                          {40, 0, 0,  0}};
@@ -32,7 +32,7 @@ BOOST_AUTO_TEST_CASE(TestGetHeterozygousStatistic) {
 }
 
 BOOST_AUTO_TEST_CASE(TestGetHomozygousStatistic) {
-  TrioModel params;
+  MultinomialTrioModel params;
   ReadDataVector data = {{20, 0, 20, 0},
                          {40, 0, 0,  0},
                          {40, 0, 0,  0}};
@@ -42,7 +42,7 @@ BOOST_AUTO_TEST_CASE(TestGetHomozygousStatistic) {
 }
 
 BOOST_AUTO_TEST_CASE(TestGetMismatchStatistic) {
-  TrioModel params;
+  MultinomialTrioModel params;
   ReadDataVector data = {{20, 0, 20, 0},
                          {40, 0, 0,  0},
                          {40, 0, 0,  0}};
@@ -152,7 +152,7 @@ BOOST_AUTO_TEST_CASE(TestGetHomozygousMatches) {
 }
 
 BOOST_AUTO_TEST_CASE(TestGetGermlineStatistic) {
-  TrioModel params;
+  MultinomialTrioModel params;
   ReadDataVector data = {{20, 0, 20, 0},
                          {40, 0, 0,  0},
                          {40, 0, 0,  0}};
@@ -162,7 +162,7 @@ BOOST_AUTO_TEST_CASE(TestGetGermlineStatistic) {
 }
 
 BOOST_AUTO_TEST_CASE(TestGermlineMutationCounts) {
-  TrioModel params;
+  MultinomialTrioModel params;
   Matrix16_256d counts = SufficientStatistics::GermlineMutationCounts(params);
   Matrix16_256d test_counts = Matrix16_256d::Zero();
   int child_allele1 = 0;
@@ -186,7 +186,7 @@ BOOST_AUTO_TEST_CASE(TestGermlineMutationCounts) {
 }
 
 BOOST_AUTO_TEST_CASE(TestGermlineMutationCountsSingle) {
-  TrioModel params;
+  MultinomialTrioModel params;
   double heterozygous = 0.5 * params.mismatch() / params.heterozygous_match();
   Matrix4_16d test_counts = Matrix4_16d::Zero();
   test_counts << 0.0,          heterozygous, heterozygous, heterozygous,  // A
@@ -210,7 +210,7 @@ BOOST_AUTO_TEST_CASE(TestGermlineMutationCountsSingle) {
 }
 
 BOOST_AUTO_TEST_CASE(TestGetSomaticStatistic) {
-  TrioModel params;
+  MultinomialTrioModel params;
   ReadDataVector data = {{20, 0, 20, 0},
                          {40, 0, 0,  0},
                          {40, 0, 0,  0}};
