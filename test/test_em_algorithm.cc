@@ -8,7 +8,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "em_algorithm.cc"
+#include "em_algorithm.h"
 
 
 BOOST_AUTO_TEST_CASE(TestEstimateParameters) {

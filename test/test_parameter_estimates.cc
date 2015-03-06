@@ -13,13 +13,23 @@
 
 BOOST_AUTO_TEST_CASE(TestParameterEstimates) {
   ParameterEstimates stats(1.0);
+  BOOST_CHECK(stats.theta() == 0.0);
   BOOST_CHECK(stats.e() == 0.0);
   BOOST_CHECK(stats.hom() == 0.0);
   BOOST_CHECK(stats.het() == 0.0);
   BOOST_CHECK(stats.som() == 0.0);
   BOOST_CHECK(stats.germ() == 0.0);
   BOOST_CHECK(stats.log_likelihood() == 0.0);
+  BOOST_CHECK(stats.max_theta() == 0.0);
+  BOOST_CHECK(stats.max_e() == 0.0);
+  BOOST_CHECK(stats.count() == 0);
   BOOST_CHECK(stats.n_s() == 1.0);
+}
+
+BOOST_AUTO_TEST_CASE(TestMaxPopulationMutationRate) {
+  ParameterEstimates stats(1.0);
+  double s_theta = stats.MaxPopulationMutationRate();
+  BOOST_CHECK(s_theta == 6.0/11.0);
 }
 
 BOOST_AUTO_TEST_CASE(TestMaxGermlineMutationRate) {
@@ -51,28 +61,35 @@ BOOST_AUTO_TEST_CASE(TestUpdate) {
                          {40, 0, 0, 0}};
   vec.push_back(data);
   stats.Update(params, vec);
+  BOOST_CHECK(stats.theta() > 0.0);
   BOOST_CHECK(stats.som() > 0.0);
   BOOST_CHECK(stats.germ() > 0.0);
   BOOST_CHECK(stats.e() > 0.0);
   BOOST_CHECK(stats.hom() > 0.0);
   BOOST_CHECK(stats.het() > 0.0);
-  BOOST_CHECK(stats.log_likelihood() < 0.0);
+  BOOST_CHECK(stats.log_likelihood() < 0.0);  // Usually negative but can be positive.
 }
 
 BOOST_AUTO_TEST_CASE(TestClear) {
   ParameterEstimates stats(1.0);
+  stats.set_theta(1.0);
   stats.set_e(1.0);
   stats.set_hom(1.0);
   stats.set_het(1.0);
   stats.set_som(1.0);
   stats.set_germ(1.0);
+  stats.set_max_theta(1.0);
+  stats.set_max_e(1.0);
   stats.Clear();
+  BOOST_CHECK(stats.theta() == 0.0);
   BOOST_CHECK(stats.e() == 0.0);
   BOOST_CHECK(stats.hom() == 0.0);
   BOOST_CHECK(stats.het() == 0.0);
   BOOST_CHECK(stats.som() == 0.0);
   BOOST_CHECK(stats.germ() == 0.0);
   BOOST_CHECK(stats.log_likelihood() == 0.0);
+  BOOST_CHECK(stats.max_theta() == 0.0);
+  BOOST_CHECK(stats.max_e() == 0.0);
   BOOST_CHECK(stats.n_s() == 1.0);
 }
 

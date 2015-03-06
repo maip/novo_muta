@@ -79,11 +79,11 @@ bool ParameterEstimates::Update(TrioModel &params, const TrioVector &sites) {
   for (const ReadDataVector data_vec : sites) {
     params.SetReadDependentData(data_vec);
     theta_ += SufficientStatistics::GetPopulationMutationRateStatistic(params);
-    // som_ += SufficientStatistics::GetSomaticStatistic(params);
-    // germ_ += SufficientStatistics::GetGermlineStatistic(params);
-    // e_ += SufficientStatistics::GetMismatchStatistic(params);
-    // hom_ += SufficientStatistics::GetHomozygousStatistic(params);
-    // het_ += SufficientStatistics::GetHeterozygousStatistic(params);
+    som_ += SufficientStatistics::GetSomaticStatistic(params);
+    germ_ += SufficientStatistics::GetGermlineStatistic(params);
+    e_ += SufficientStatistics::GetMismatchStatistic(params);
+    hom_ += SufficientStatistics::GetHomozygousStatistic(params);
+    het_ += SufficientStatistics::GetHeterozygousStatistic(params);
 
     log_likelihood_ += log(params.likelihood_read_dependent_data().denominator.sum);
     log_likelihood_2 += log(params.read_dependent_data().denominator.sum);
@@ -242,6 +242,14 @@ void ParameterEstimates::set_theta(double max) {
 
 void ParameterEstimates::set_e(double max) {
   e_ = max;
+}
+
+void ParameterEstimates::set_max_theta(double max) {
+  max_theta_ = max;
+}
+
+void ParameterEstimates::set_max_e(double max) {
+  max_e_ = max;
 }
 
 void ParameterEstimates::set_hom(double max) {

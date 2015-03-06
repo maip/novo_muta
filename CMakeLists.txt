@@ -15,12 +15,6 @@ set(TRIO_MODEL utility.cc read_dependent_data.cc trio_model.cc)
 include_directories("./")
 include_directories("/test")
 include_directories("${CMAKE_SOURCE_DIR}/Eigen/src")
-#include_directories("${CMAKE_SOURCE_DIR}/bamtools/lib")
-#target_include_directories("${CMAKE_SOURCE_DIR}/bamtools/lib" public)
-LINK_DIRECTORIES("${CMAKE_SOURCE_DIR}/bamtools/lib")
-
-find_package( Eigen3 3 REQUIRED )
-include_directories(${EIGEN3_INCLUDE_DIR})
 
 # Comment out if usr/local/include/bamtools/utils exists.
 include_directories("${CMAKE_SOURCE_DIR}/bamtools/src")
@@ -30,13 +24,12 @@ include_directories(${GSL_INCLUDE_DIRS})
 exec_program(${GSL_CONFIG} ARGS --libs OUTPUT_VARIABLE GSL_LIBRARIES)
 
 find_package(BamTools REQUIRED)
-
 if(BamTools_FOUND)
   include_directories(${BamTools_INCLUDE_DIRS})
 
   add_executable(bam_driver ${TRIO_MODEL}
                  ${BamTools_LIBRARIES} variant_visitor.cc
-                 ${EM} bam_utility.cc bam_driver.cc em_algorithm.h)
+                 ${EM} bam_utility.cc bam_driver.cc)
 endif()
 
 add_executable(bin_driver utility.cc bin_driver.cc)
@@ -47,20 +40,19 @@ add_executable(simulation_driver ${TRIO_MODEL} simulation_model.cc simulation_dr
 add_executable(simulation_trio ${TRIO_MODEL} simulation_trio.cc)
 
 target_link_libraries(bam_driver bamtools bamtools-utils ${GSL_LIBRARIES})
-#target_link_libraries(bam_driver ${BamTools_LIBRARIES} ${GSL_LIBRARIES})
 target_link_libraries(indiv_driver ${GSL_LIBRARIES})
 target_link_libraries(simulation_driver ${GSL_LIBRARIES})
 target_link_libraries(simulation_trio ${GSL_LIBRARIES})
 target_link_libraries(pileup_driver ${GSL_LIBRARIES})
 
-#set(Boost_USE_STATIC_LIBS        ON)
+set(Boost_USE_STATIC_LIBS        ON)
 set(Boost_USE_MULTITHREADED      ON)
 set(Boost_USE_STATIC_RUNTIME    OFF)
 find_package(Boost 1.36.0 COMPONENTS system filesystem unit_test_framework REQUIRED)
 
 if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS})
-  ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK)
+
   project(test_utility)
   add_executable(test_utility utility.cc test/test_utility.cc)
   target_link_libraries(test_utility ${GSL_LIBRARIES} ${Boost_LIBRARIES})
@@ -104,5 +96,3 @@ add_test(test_pileup_utility test_pileup_utility)
 add_test(test_sufficient_statistics test_sufficient_statistics)
 add_test(test_parameter_estimates test_parameter_estimates)
 add_test(test_em_algorithm test_em_algorithm)
-
-set(CMAKE_CXX_FLAGS_DEBUG  "-g -O0 -Wvla -Wall -Wextra -pedantic ")

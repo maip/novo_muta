@@ -49,6 +49,8 @@ class ParameterEstimates {
   int count() const;
   void set_theta(double max);
   void set_e(double max);
+  void set_max_theta(double max);
+  void set_max_e(double max);
   void set_hom(double max);
   void set_het(double max);
   void set_som(double max);
@@ -72,6 +74,6 @@ class ParameterEstimates {
   int count_;                    // Number of iterations in EM algorithm performed.
 };
 
-ParameterEstimates* EstimateParameters(TrioModel &params, const TrioVector &sites);
+ParameterEstimates* EstimateParameters(TrioModel &params, const TrioVector &sites);  // From em_algorithm.h
 
 #endif

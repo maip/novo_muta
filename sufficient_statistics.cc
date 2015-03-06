@@ -66,8 +66,6 @@ double SufficientStatistics::GetHomozygousStatistic(const TrioModel &params) {
  */
 double SufficientStatistics::GetMismatchStatistic(const TrioModel &params) {
   return GetSequencingErrorStatistic(params, 2);
-    //Note: Circular dependence: SetReadDependentData(data_vec) in Update().  read_dependent_data() here
-    //Note: GetMismatches(heter/homo) can factor out, it's constant for given dataset
 }
 
 /**
