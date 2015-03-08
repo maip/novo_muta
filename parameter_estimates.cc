@@ -25,7 +25,7 @@ ParameterEstimates::ParameterEstimates(double sites_count)
  * expectation-maximization algorithm.
  */
 double ParameterEstimates::MaxPopulationMutationRate() {
-  return 6.0 / 11.0 * (1.0 - theta_ / n_s_);
+  return 6.0 / 11.0 * (1.0 - theta_/n_s_);
 }
 
 /**
@@ -75,10 +75,9 @@ double ParameterEstimates::MaxSequencingErrorRate() {
  */
 bool ParameterEstimates::Update(TrioModel &params, const TrioVector &sites) {
   Clear();  // Sets all statistics except number of sites to 0.
-  double log_likelihood_2 = 0;
   for (const ReadDataVector data_vec : sites) {
     params.SetReadDependentData(data_vec);
-    theta_ += SufficientStatistics::GetPopulationMutationRateStatistic(params);
+    theta_ += SufficientStatistics::GetThetaStatistic(params);
     som_ += SufficientStatistics::GetSomaticStatistic(params);
     germ_ += SufficientStatistics::GetGermlineStatistic(params);
     e_ += SufficientStatistics::GetMismatchStatistic(params);
@@ -86,11 +85,6 @@ bool ParameterEstimates::Update(TrioModel &params, const TrioVector &sites) {
     het_ += SufficientStatistics::GetHeterozygousStatistic(params);
 
     log_likelihood_ += log(params.likelihood_read_dependent_data().denominator.sum);
-    log_likelihood_2 += log(params.read_dependent_data().denominator.sum);
-
-    cout << "LIKELIHOOD:\t" << params.likelihood_read_dependent_data().denominator.sum << endl;
-    cout << "LOGLIKELIHOOD:\t" << log_likelihood_ << endl;
-
     if (count_ == 0) {
       start_log_likelihood_ = log_likelihood_;
     }
@@ -98,13 +92,13 @@ bool ParameterEstimates::Update(TrioModel &params, const TrioVector &sites) {
     if (IsNan()) {
       cout << "ERROR: This site is nan." << endl;
       PrintReadDataVector(data_vec);
-      Print(params.sequencing_error_rate());
+      Print(params.population_mutation_rate());
+      // Print(params.sequencing_error_rate());
       Die("Cannot continue EM with a nan estimate.");
       return false;
     }
   }
-  cout <<  log_likelihood_ << "\t" << log_likelihood_2 << "\t" << params.population_mutation_rate() << endl;
-
+  
   max_theta_ = MaxPopulationMutationRate();
   //max_e_ = MaxSequencingErrorRate();
 
@@ -149,9 +143,10 @@ void ParameterEstimates::Clear() {
  * Returns true if any of the statistics is NaN. Does not check for n_s_ or count_.
  */
 bool ParameterEstimates::IsNan() {
-  return (std::isnan(theta_) || std::isnan(e_) || std::isnan(hom_) || std::isnan(het_) ||
-          std::isnan(som_) || std::isnan(germ_) || std::isnan(log_likelihood_) ||
-          std::isnan(start_log_likelihood_));
+  return (std::isnan(theta_) || std::isnan(e_) || std::isnan(hom_) ||
+          std::isnan(het_) || std::isnan(som_) || std::isnan(germ_) ||
+          std::isnan(log_likelihood_) || std::isnan(start_log_likelihood_)) ||
+          std::isnan(max_e_) || std::isnan(max_theta_);
 }
 
 /**

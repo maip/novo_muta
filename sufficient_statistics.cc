@@ -18,15 +18,14 @@
  * @param params TrioModel object containing parameters.
  * @return       Expected theta.
  */
-double SufficientStatistics::GetPopulationMutationRateStatistic(const TrioModel &params) {
+double SufficientStatistics::GetThetaStatistic(const TrioModel &params) {
   const ReadDependentData data = params.read_dependent_data();
   const RowVector256d root_mat = data.denominator.root_mat;
   const double sum = data.denominator.sum;
-  double AAAA = root_mat(0) / sum;
-  double CCCC = root_mat(64) / sum;
-  double GGGG = root_mat(128) / sum;
-  double TTTT = root_mat(192) / sum;
-  
+  double AAAA = root_mat(kAAAA) / sum;
+  double CCCC = root_mat(kCCCC) / sum;
+  double GGGG = root_mat(kGGGG) / sum;
+  double TTTT = root_mat(kTTTT) / sum;
   return AAAA + CCCC + GGGG + TTTT;
 }
 

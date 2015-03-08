@@ -11,13 +11,13 @@
 #include "sufficient_statistics.h"
 
 
-BOOST_AUTO_TEST_CASE(TestGetPopulationMutationRateStatistic) {
+BOOST_AUTO_TEST_CASE(TestGetThetaStatistic) {
   TrioModel params;
   ReadDataVector data = {{20, 0, 20, 0},
                          {40, 0, 0,  0},
                          {40, 0, 0,  0}};
   params.SetReadDependentData(data);
-  double s_theta = SufficientStatistics::GetPopulationMutationRateStatistic(params);
+  double s_theta = SufficientStatistics::GetThetaStatistic(params);
   BOOST_CHECK(s_theta >= 0.0);
 }
 

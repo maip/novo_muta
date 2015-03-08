@@ -18,7 +18,7 @@
  *
  * See top of pileup_utility.h for additional information.
  */
-#include "em_algorithm.cc" 
+#include "em_algorithm.h" 
 #include "pileup_utility.h"
 
 

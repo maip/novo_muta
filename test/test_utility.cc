@@ -55,6 +55,15 @@ BOOST_AUTO_TEST_CASE(TestTwoParentCounts) {
       vec = RowVector4d::Zero();
     }
   }
+
+  RowVector4d expected_4_ACGT[] = { RowVector4d {4,0,0,0},
+                                    RowVector4d {0,4,0,0},
+                                    RowVector4d {0,0,4,0},
+                                    RowVector4d {0,0,0,4}};
+  BOOST_CHECK(mat(0) == expected_4_ACGT[0]);
+  BOOST_CHECK(mat(85) == expected_4_ACGT[1]);
+  BOOST_CHECK(mat(170) == expected_4_ACGT[2]);
+  BOOST_CHECK(mat(255) == expected_4_ACGT[3]);
 }
 
 BOOST_AUTO_TEST_CASE(TestEqualsReadData) {

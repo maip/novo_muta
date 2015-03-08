@@ -91,7 +91,18 @@ void Die(const char *msg);
  * 13     TC
  * 14     TG
  * 15     TT
+ *
+ * INDEX  GENOTYPE (paired parent genotype for use in 256 matrix)
+ * 0      AAAA
+ * 85     CCCC
+ * 170    GGGG
+ * 255    TTTT
+ * i      Mother genotype*16 + Father genotype
  */
+const int kAAAA = 0;
+const int kCCCC = 85;
+const int kGGGG = 170;
+const int kTTTT = 255;
 const int kNucleotideCount = 4;
 const int kGenotypeCount = 16;
 const int kGenotypePairCount = 256;
